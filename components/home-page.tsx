@@ -1,19 +1,25 @@
 "use client";
+import { MultiStepLoader as Loader } from "@/components/ui/multi-step-loader";
 import FolderCopyIcon from '@mui/icons-material/FolderCopy';
 import AutoAwesomeMosaicIcon from '@mui/icons-material/AutoAwesomeMosaic';
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { useState,useEffect } from 'react';
 
 export function HomePage() {
 
-  const handleUpload = async (event : any) => {
+  const [loading, setLoading] = useState(false);
+
+  const handleUpload = async (event: any) => {
+    setLoading(true);
     const input = event.target;
     if (input && input.files && input.files.length > 0) {
         const formData = new FormData();
-        for(let i=0; i< input.files.length; i++) {
-          formData.append('files', input.files[i]);
+        for(let i = 0; i < input.files.length; i++) {
+            // Change 'files' to 'files[]' to match the server's expectation
+            formData.append('files[]', input.files[i]);
         }
-        const response = await fetch('http://localhost:4500/upload', {
+        const response = await fetch('http://127.0.0.1:4500/upload', {
             method: 'POST',
             body: formData
         });
@@ -23,6 +29,13 @@ export function HomePage() {
         console.error('No folder selected');
     }
 };
+
+useEffect(() => {
+  setTimeout(() => {
+    window.location.href = "/output";
+  }, 26500);
+}, [loading]);
+
 
 const handleClick = () => {
     const input = document.createElement('input');
@@ -35,6 +48,7 @@ const handleClick = () => {
 
   return (
     <div className="flex flex-col h-screen w-full bg-gradient-to-br from-gray-900 to-gray-500">
+      {loading && <Loader loadingStates={loadingStates} loading={loading} />}
       <header className="relative z-10">
         <div className="container flex items-center justify-between py-4 px-4 md:py-6 md:px-6">
           <Link className="flex items-center space-x-2 font-medium" href="/">
@@ -83,6 +97,19 @@ const handleClick = () => {
     </div>
   )
 }
+
+const loadingStates = [
+  { text: "Uploading Photos" },
+  { text: "Starting the Model" },
+  { text: "Analyzing Photos" },
+  { text: "Normalizing Photos" },
+  { text: "Orthorectifying Images" },
+  { text: "Making Order to Stitch" },
+  { text: "Stitching Up Images" },
+  { text: "Producing Final Values" },
+  { text: "Downloading Output" },
+  { text: "Minimizing Output" },
+ ];
 
 function FlagIcon(props) {
   return (
