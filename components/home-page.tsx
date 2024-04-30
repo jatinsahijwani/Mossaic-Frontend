@@ -33,7 +33,7 @@ export function HomePage() {
 useEffect(() => {
   setTimeout(() => {
     window.location.href = "/output";
-  }, 26500);
+  }, 30000);
 }, [loading]);
 
 
